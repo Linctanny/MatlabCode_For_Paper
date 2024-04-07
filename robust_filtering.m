@@ -1,11 +1,11 @@
 clc;clear;
 %% 参数设置
 % 设定随机种子
-rng(1);
+% rng(1123);
 % 迭代次数设定
 max_iter_num = 20;
 % 初始值设置
-E = 3*eye(2,2);
+E = 9*eye(2,2);
 x_init = zeros(2,1);
 % 常量设定
 A = [0 -0.5;0.8 1];
@@ -30,7 +30,7 @@ min_value = 1e-6;
 % 观测数据的值的代入
 x_k = [];
 y_k = [];
-x_k(:,1) = [-0.5;1];
+x_k(:,1) = [-2;1];
 for k = 1:max_iter_num
     y_k(:,k) = C*x_k(:,k)+0.02*v(k);
     x_k(:,k+1) = (A+diag([0,0.3*delta(k)]))*x_k(:,k)+B*w(k);
@@ -62,6 +62,7 @@ for k = 1:max_iter_num
     variable x(2)
     variable P(2,2) semidefinite
     minimize(trace(P))
+%     minimize(norm(P,2))
     subject to 
     
         sdp_2 = [A*x_init-x A*E_temp B zeros(2,1) L_1]*pusai;
@@ -73,6 +74,7 @@ for k = 1:max_iter_num
          zeros(1,6)]-Omiga)*pusai;
         P - min_value*eye(2) == semidefinite(2);
         [P,sdp_2;sdp_2',sdp_4]-min_value*eye(7) == semidefinite(7);
+%         [P,sdp_2;sdp_2',sdp_4]-min_value*eye(7) >=0
     
     cvx_end
     % 对x_hat,与P_hat进行赋值  
@@ -87,7 +89,7 @@ end
 % 取出椭球中心的界
 bound = [];
 for k = 1:max_iter_num+1
-    temp = diag(P_hat(:,:,k));
+    temp = sqrt(diag(P_hat(:,:,k)));
     bound(k) = temp(1);
 end
 upper_bound = x_hat(1,:)+bound;

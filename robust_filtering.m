@@ -1,14 +1,14 @@
 clc;clear;
 %% 参数设置
 % 设定随机种子
-% rng(1123);
+% rng(12345);
 % 迭代次数设定
 max_iter_num = 20;
 % 初始值设置
 E = 9*eye(2,2);
 x_init = zeros(2,1);
 % 常量设定
-A = [0 -0.5;0.8 1];
+A = [0 -0.5;1 1];
 B = [-0.12;0.02];
 C = [-100 10];
 D = 0.02;
@@ -26,11 +26,11 @@ delta = rand(1,max_iter_num)*2-1;
 w = rand(1,max_iter_num)*2-1;
 v = rand(1,max_iter_num)*2-1;
 % P的正定性设定
-min_value = 1e-6;
+min_value = 1e-11;
 % 观测数据的值的代入
 x_k = [];
 y_k = [];
-x_k(:,1) = [-2;1];
+x_k(:,1) = [-2;2];
 for k = 1:max_iter_num
     y_k(:,k) = C*x_k(:,k)+0.02*v(k);
     x_k(:,k+1) = (A+diag([0,0.3*delta(k)]))*x_k(:,k)+B*w(k);
@@ -85,6 +85,7 @@ for k = 1:max_iter_num
     str=['运行中...',num2str(k/max_iter_num*100),'%'];
     waitbar(k/max_iter_num,h,str);
 end  
+close(h)
 
 % 取出椭球中心的界
 bound = [];
@@ -104,18 +105,3 @@ legend('真实投影','椭球中心投影','上边界','下边界')
 xlabel('Time k')
 ylabel('z(k)')
 title('Robust Filter')
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
